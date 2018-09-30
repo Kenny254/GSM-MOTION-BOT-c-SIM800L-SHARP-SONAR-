@@ -85,6 +85,54 @@ if (dis>= 180){
   }
   
 delay(10);
+  
+  //SIM800L SECTION
+  if(mySerial.available()){
+      delay(100);
+      
+      // Serial buffer
+      while(mySerial.available()){
+        incomingByte = mySerial.read();
+        inputString += incomingByte; 
+        }
+        
+        delay(10);
+       
+        ////Serial.println(inputString);
+        inputString.toUpperCase(); // uppercase the message received
+
+        //turn LED ON or OFF
+        if (inputString.indexOf("ON") > -1){
+          digitalWrite(led, HIGH);
+          delay(100);
+            mySerial.write("AT+CMGS=\"0700000000\"\r\n");
+            delay(1000);
+            mySerial.write("Switched ON");
+            delay(1000);
+            mySerial.write((char)26);
+            delay(1000);
+            ////Serial.println("SMS sent");
+        }         
+         if (inputString.indexOf("OFF") > -1){
+          digitalWrite(led, LOW);
+          mySerial.write("AT+CMGS=\"0700000000\"\r\n");
+          delay(1000);
+          mySerial.write("Switched OFF");
+          delay(1000);
+          mySerial.write((char)26);
+          delay(1000);
+          ////Serial.println("SMS sent");
+          }
+          
+        delay(50);
+
+        //delete messages to save memory
+        if (inputString.indexOf("OK") == -1){
+        mySerial.println("AT+CMGDA=\"DEL ALL\"");
+        delay(1000);}
+
+        inputString = "";
+  }
 
 }
 
